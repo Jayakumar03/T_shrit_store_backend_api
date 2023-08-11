@@ -1,0 +1,44 @@
+{
+  "name": "e-commerence",
+  "version": "1.0.0",
+  "description": "An backend api for tshrit store",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "express.js",
+    "node.js",
+    "nodemon",
+    "bycrypt",
+    "mongoose.",
+    "monogdb",
+    "cloudinary",
+    "coolie-parser",
+    "dotenv",
+    "express-fileupload"
+  ],
+  "author": "Jayakumar",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.40.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.4.2",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.4",
+    "razorpay": "^2.9.1",
+    "stripe": "^12.17.0",
+    "swagger-ui-express": "^5.0.0",
+    "validator": "^13.11.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
