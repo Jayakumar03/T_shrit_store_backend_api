@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
-const { use } = require("../app");
+const validator = require("validator")
+const jwt = require("jsonwebtoken")
+const crypto = require("crypto") 
+const bcrypt= require9("bcryptjs") 
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -62,6 +66,30 @@ userSchema.pre("save", async function(){
 
 })
 
+// * Checking the password is correct
+userSchema.methods.sValidatedPassword = async function () {
+    return await bcrypt.compare(usersendpassword).this.password
+}
+
+// * Creating and returning an JWT token
+userSchema.method.getJwtTokem = function(){
+    return jwt.sign({ id: this._id }, process.env.SECRET_KEY, {
+        expriedIn:process.env.EXPIRY
+    });
+}
+
+//  * Creating forgot password token and only sending the token not the hashed value. It will be stored in DB. But user provide the token, We need to
+// *  hash it compare with the token in the backend
+userSchema.methods.getForgotPasswordToken = function () {
+    const forgotToken =crypto.randomBytes(20).toString("hex") 
+    // Getting a hash = make sure to get a hash on backend
+    this.forgotPasswordToken = crypto.createHash("sha256").update(forgotToken).digest("hex")
+
+    this.forgotPasswordExpiry = Date.now() + 20 * 60 * 1000;
+
+    return forgotToken
+    
+}
 
 
 module.exports  = mongoose.Model("User", userSchema)
