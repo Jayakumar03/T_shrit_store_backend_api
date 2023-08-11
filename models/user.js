@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// * Encrypt Password before save
+// * Encrypt Password before save == Pre Hooks
 userSchema.pre("save", async function(){
     // ismodified will return true  if the password field changed or if new password is provided
     // for new password is given => true => !true = false => will not enter the if
@@ -62,4 +62,8 @@ userSchema.pre("save", async function(){
 
 })
 
+
+
 module.exports  = mongoose.Model("User", userSchema)
+
+
