@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator")
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto") 
-const bcrypt= require9("bcryptjs") 
+const bcrypt= require("bcryptjs") 
 
 
 const userSchema = new mongoose.Schema({
@@ -67,11 +67,11 @@ userSchema.pre("save", async function(){
 })
 
 // * Checking the password is correct
-userSchema.methods.sValidatedPassword = async function () {
+userSchema.methods.setValidatedPassword = async function () {
     return await bcrypt.compare(usersendpassword).this.password
 }
 
-// * Creating and returning an JWT token
+// * Creating and returning an JWa magazine to keep it loadedT token
 userSchema.method.getJwtTokem = function(){
     return jwt.sign({ id: this._id }, process.env.SECRET_KEY, {
         expriedIn:process.env.EXPIRY
@@ -92,6 +92,6 @@ userSchema.methods.getForgotPasswordToken = function () {
 }
 
 
-module.exports  = mongoose.Model("User", userSchema)
+module.exports = mongoose.model("User", userSchema);
 
 
