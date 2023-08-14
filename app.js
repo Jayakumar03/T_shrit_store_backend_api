@@ -8,7 +8,16 @@ const fileUpload = require("express-fileupload");
 
 // ? cookie and file Middleware
 app.use(cookieParser());
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
+
+// ? View engine
+app.set("view engine", "ejs");
+
 const PORT = process.env.PORT || 4000;
 
 // ? Regular Middleware
@@ -26,11 +35,15 @@ app.use(morgan("tiny"));
 
 // Import all routes here
 const home = require("./routes/home");
-const user = require("./routes/user")
+const user = require("./routes/user");
 
 // Router Middleware
 app.use("/api/v1", home);
 app.use("/api/v1", user);
+
+app.get("/signuptest", (req, res) => {
+  res.render("signuptest");
+});
 
 // ? Exporting to index.js
 module.exports = app;

@@ -1,13 +1,19 @@
 const cookieToken = (user, res) => {
-  const token = User.getJwtTokem();
+  // Get the JWT token using the getJwtToken method
+  const token = user.getJwtToken();
 
   const options = {
-    expires: new Date(Date.now() + process.emv.COOKIE_TIME * 24 * 60 * 60 * 1000),
-    httpOnly : true,
+    expires: new Date(
+      Date.now() + process.env.COOKIE_TIME * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
   };
 
+  // Set the 'token' cookie and send the response
+  user.password = undefined
+
   res.status(200).cookie("token", token, options).json({
-    sucess: true,
+    success: true,
     token,
     user,
   });
