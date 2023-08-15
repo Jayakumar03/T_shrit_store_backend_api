@@ -63,8 +63,8 @@ userSchema.pre("save", async function () {
 });
 
 // * Checking the password is correct
-userSchema.methods.isValidatedpasswords = async function () {
-  return await bcrypt.compare(usersendpassword).this.password;
+userSchema.methods.isValidatedPassword = async function (userSendPassword) {
+  return await bcrypt.compare(userSendPassword, this.password);
 };
 
 // * Creating and returning an JWT  magazine to keep it loaded token
