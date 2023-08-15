@@ -4,6 +4,7 @@ const customError = require("../utils/customError");
 const cookieToken = require("../utils/cookieToken");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
+const { mailHelper } = require("../utils/mailHelper");
 
 exports.signUp = async (req, res, next) => {
   try {
@@ -71,6 +72,66 @@ exports.login = async (req, res, next) => {
 
     // Creating and jsonwebtoken
     cookieToken(user, res);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.logout = async (req, res, next) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+
+    res.status(200).json({
+      sucess: true,
+      message: "Logout Success",
+    });
+  } catch (error) {}
+};
+
+// Todo: Solve this error
+// Error
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return next(new Error("Email not verified as registerd user", 400));
+
+    const forgotToken = user.getForgotPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const myUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/password/reset/${forgotToken}`;
+
+    const message = `copy paste this link in your url and hit enter \n\n ${myUrl}`;
+
+    try {
+      await mailHelper({
+        email: user.email,
+        subject: "T-store - Password reset email",
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Email sent successfully",
+      });
+
+      console.log(1);
+    } catch (error) {
+      user.getForgotPasswordToken = undefined;
+      user.getForgotPasswordToken = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(new Error(error.message, 500));
+    }
   } catch (error) {
     console.log(error);
   }

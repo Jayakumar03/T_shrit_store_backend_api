@@ -51,16 +51,18 @@ const userSchema = new mongoose.Schema({
 });
 
 // * Encrypt Password before save == Pre Hooks
-userSchema.pre("save", async function () {
-  // ismodified will return true  if the password field changed or if new password is provided
-  // for new password is given => true => !true = false => will not enter the if
-  // if only name or email has been changed => false => !false => true => Enter the if statement => return()
-  if (!this.isModified("password")) {
-    return next();
-  }
+// userSchema.pre("save", async function () {
+//   // ismodified will return true  if the password field changed or if new password is provided
+//   // for new password is given => true => !true = false => will not enter the if
+//   // if only name or email has been changed => false => !false => true => Enter the if statement => return()
+//   if (!this.isModified("password")) {
+//     return next();
+//   }
 
-  this.password = await bcrypt.hash(this.password, 10);
-});
+//   this.password = await bcrypt.hash(this.password, 10);
+
+  
+// });
 
 // * Checking the password is correct
 userSchema.methods.isValidatedPassword = async function (userSendPassword) {

@@ -10,7 +10,7 @@ const cookieToken = (user, res) => {
   };
 
   // Set the 'token' cookie and send the response
-  user.password = undefined
+  user.password = undefined;
 
   res.status(200).cookie("token", token, options).json({
     success: true,
