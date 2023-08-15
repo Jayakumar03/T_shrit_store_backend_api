@@ -5,6 +5,7 @@ const cookieToken = require("../utils/cookieToken");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
 const { mailHelper } = require("../utils/mailHelper");
+const crypto = require("crypto");
 
 exports.signUp = async (req, res, next) => {
   try {
@@ -91,8 +92,9 @@ exports.logout = async (req, res, next) => {
   } catch (error) {}
 };
 
-// Todo: Solve this error
-// Error
+
+// Todo : User.save is not working 
+// ? Error message  : next in not defined
 exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -108,7 +110,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     const myUrl = `${req.protocol}://${req.get(
       "host"
-    )}/password/reset/${forgotToken}`;
+    )}/api/v1/password/reset/${forgotToken}`;
 
     const message = `copy paste this link in your url and hit enter \n\n ${myUrl}`;
 
@@ -126,12 +128,47 @@ exports.forgotPassword = async (req, res, next) => {
 
       console.log(1);
     } catch (error) {
-      user.getForgotPasswordToken = undefined;
-      user.getForgotPasswordToken = undefined;
+      user.forgotPasswordToken = undefined;
+      user.forgotPasswordExpiry = undefined;
       await user.save({ validateBeforeSave: false });
 
       return next(new Error(error.message, 500));
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Todo: Solve this error
+// Error : Generate token are saved in user in mongoDb because of error in forgot password
+exports.passwordReset = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+
+    const encryToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      encryToken,
+      forgotPasswordExpiry: { $gt: Date.now() },
+    });
+
+    console.log(user);
+    if (!user)
+      return next(new Error("Token is either invalid or expired", 400));
+
+    if (req.body.password !== req.body.confirmPassword)
+      return next(new Error("password and confirm password do not match", 400));
+
+    let password = req.body.password;
+
+    user.password = password;
+
+    user.forgotPasswordToken = undefined;
+    user.forgotPasswordToken = undefined;
+
+    await user.save();
+
+    cookieToken(res, user);
   } catch (error) {
     console.log(error);
   }
