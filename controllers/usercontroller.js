@@ -92,9 +92,6 @@ exports.logout = async (req, res, next) => {
   } catch (error) {}
 };
 
-
-// Todo : User.save is not working 
-// ? Error message  : next in not defined
 exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -136,6 +133,7 @@ exports.forgotPassword = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
 
@@ -152,7 +150,6 @@ exports.passwordReset = async (req, res, next) => {
       forgotPasswordExpiry: { $gt: Date.now() },
     });
 
-    console.log(user);
     if (!user)
       return next(new Error("Token is either invalid or expired", 400));
 
@@ -172,4 +169,35 @@ exports.passwordReset = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+// TODO : Not working
+// error mesaage : Invalid token
+exports.getLoggedInUserDetails = async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+
+  res.status(200).json({
+    sucess: true,
+    user,
+  });
+};
+
+exports.changePassword = async (req, res, next) => {
+  const userId = req.user.id;
+
+  const user = await User.findById(userId).select("+password");
+
+  const isOldPasswordCorrect = await user.isValidatedPassword(
+    req.body.oldPassword
+  );
+
+  if (!isOldPasswordCorrect) {
+    return next(new Error("Old is password is incorrect"));
+  }
+
+  user.password = req.body.oldPassword;
+
+  await user.save();
+
+  cookieToken(user, res);
 };

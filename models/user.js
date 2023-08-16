@@ -51,13 +51,12 @@ const userSchema = new mongoose.Schema({
 });
 
 // * Encrypt Password before save == Pre Hooks
-userSchema.pre("save", async function () {
+userSchema.pre("save", async function (next) {
   // ismodified will return true  if the password field changed or if new password is provided
   // for new password is given => true => !true = false => will not enter the if
   // if only name or email has been changed => false => !false => true => Enter the if statement => return()
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
-    return next();
   }
   return next();
 });
@@ -71,7 +70,7 @@ userSchema.methods.isValidatedPassword = async function (userSendPassword) {
 userSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.SECRET_KEY, {
     expiresIn: process.env.EXPIRY,
-  });
+  });GET
 };
 
 //  * Creating forgot password token and only sending the token not the hashed value. It will be stored in DB. But user provide the token, We need to
