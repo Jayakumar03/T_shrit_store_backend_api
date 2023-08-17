@@ -83,6 +83,8 @@ userSchema.methods.getForgotPasswordToken = function () {
     .update(forgotToken)
     .digest("hex");
 
+  console.log(" This is encry token", this.forgotPasswordToken)
+
   this.forgotPasswordExpiry = Date.now() + 20 * 60 * 1000;
 
   return forgotToken;

@@ -1,17 +1,22 @@
 const User = require("../models/user");
-// const BigPromise = require("../middlewares/bigPromise");
-const customError = require("../utils/customError");
-const cookieToken = require("../utils/cookieToken");
 const jwt = require("jsonwebtoken");
 
 exports.isLoggedIn = async (req, res, next) => {
-  const token = req.cookie || req.header("Authorization").replace("Bearer", "");
+  // const token = req.cookie || req.header("Authorization").replace("Bearer", "");
+  let token = req.cookies.token;
 
-  if (!token) return next(new Error("Login first to acess this page", 400));
+   // if token not found in cookies, check if header contains Auth field
+   if (!token && req.header("Authorization")) {
+    token = req.header("Authorization").replace("Bearer ", "");
+  }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!token) return next(new Error("Login first to acess this page", 401));
+
+  const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
   req.user = await User.findById(decoded.id);
 
   next();
 };
+
+

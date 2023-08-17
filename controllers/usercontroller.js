@@ -100,10 +100,13 @@ exports.forgotPassword = async (req, res, next) => {
 
     if (!user)
       return next(new Error("Email not verified as registerd user", 400));
-
+    
     const forgotToken = user.getForgotPasswordToken();
+    
+    console.log(forgotToken)
 
     await user.save({ validateBeforeSave: false });
+
 
     const myUrl = `${req.protocol}://${req.get(
       "host"
@@ -123,7 +126,6 @@ exports.forgotPassword = async (req, res, next) => {
         message: "Email sent successfully",
       });
 
-      console.log(1);
     } catch (error) {
       user.forgotPasswordToken = undefined;
       user.forgotPasswordExpiry = undefined;
@@ -137,18 +139,22 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-// Todo: Solve this error
-// Error : Generate token are saved in user in mongoDb because of error in forgot password
 exports.passwordReset = async (req, res, next) => {
   try {
     const token = req.params.token;
+    console.log(token)
 
     const encryToken = crypto.createHash("sha256").update(token).digest("hex");
 
+    console.log("encry",encryToken)
+
     const user = await User.findOne({
-      encryToken,
+      forgotPasswordToken: encryToken,
       forgotPasswordExpiry: { $gt: Date.now() },
     });
+
+    console.log(user)
+
 
     if (!user)
       return next(new Error("Token is either invalid or expired", 400));
@@ -165,14 +171,13 @@ exports.passwordReset = async (req, res, next) => {
 
     await user.save();
 
-    cookieToken(res, user);
+    cookieToken(user,res );
   } catch (error) {
     console.log(error);
   }
 };
 
-// TODO : Not working
-// error mesaage : Invalid token
+
 exports.getLoggedInUserDetails = async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
@@ -182,8 +187,10 @@ exports.getLoggedInUserDetails = async (req, res, next) => {
   });
 };
 
+
 exports.changePassword = async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = req.user._id;
+  console.log(userId)
 
   const user = await User.findById(userId).select("+password");
 
@@ -201,3 +208,58 @@ exports.changePassword = async (req, res, next) => {
 
   cookieToken(user, res);
 };
+
+
+exports.updateUserDetails = (async (req, res, next) => {
+  // add a check for email and name in body
+
+  // collect data from body
+  const newData = {
+    name: req.body.name,
+    email: req.body.email,
+  };
+
+  // if photo comes to us
+  if (req.files) {
+    try {
+      const user = await User.findById(req.user.id);
+
+    const imageId = user.photo.id;
+
+    // delete photo on cloudinary
+    const resp = await cloudinary.uploader.destroy(imageId);
+
+    // upload the new photo
+    const result = await cloudinary.uploader.upload(
+      req.files.photo.tempFilePath,
+      {
+        folder: "users",
+        width: 150,
+        crop: "scale",
+      }
+    );
+
+    // add photo data in newData object
+    newData.photo = {
+      id: result.public_id,
+      secure_url: result.secure_url,
+    };
+  }
+  catch (error) {
+    console.log(error)
+      
+    }
+  }
+  // update the data in user
+  const user = await User.findByIdAndUpdate(req.user.id, newData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  res.status(200).json({
+    success: true,
+    user
+  });
+});
+

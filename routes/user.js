@@ -11,6 +11,7 @@ const {
   passwordReset,
   getLoggedInUserDetails,
   changePassword,
+  updateUserDetails
 } = require("../controllers/usercontroller");
 
 router.route("/signup").post(signUp);
@@ -25,6 +26,15 @@ router.route("/password/reset/:token").post(passwordReset);
 
 router.route("/userdashboard").get(isLoggedIn, getLoggedInUserDetails);
 
-router.route("/password/update").post(changePassword);
+router.route("/password/update").put(isLoggedIn,changePassword);
+
+router.route("/userdashboard/update").put(isLoggedIn, updateUserDetails);
+
+
+
+
+
+
+
 
 module.exports = router;
