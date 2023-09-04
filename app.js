@@ -18,7 +18,7 @@ app.use(
 // ? View engine
 app.set("view engine", "ejs");
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
 // ? Regular Middleware
 app.use(express.json());
@@ -36,19 +36,14 @@ app.use(morgan("tiny"));
 // Import all routes here
 const home = require("./routes/home");
 const user = require("./routes/user");
-const admin = require("./routes/admin")
-const product = require("./routes/product")
-
-
-
+const admin = require("./routes/admin");
+const product = require("./routes/product");
 
 // Router Middleware
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 app.use("/api/v1", admin);
 app.use("/api/v1", product);
-
-
 
 app.get("/signuptest", (req, res) => {
   res.render("signuptest");
