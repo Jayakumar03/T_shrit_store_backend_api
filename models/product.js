@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -12,15 +13,13 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, "please provide product price"],
     trim: true,
-    maxlength: [5, "product price should not be more than 5 digits"],
+    maxlength: [6, "product price should not be more than 5 digits"],
   },
 
   description: {
     type: String,
     required: [true, "please provide product description"],
   },
-
-  
 
   photos: [
     {
@@ -43,11 +42,17 @@ const productSchema = new mongoose.Schema({
       "please select an category form- short-sleeves, long-sleeves, sweat-shrits, hoodies",
     ],
     enum: {
-      values: ["shortssleeves", "longsleeves", "sweatshrit", "hoodies"],
+      values: ["shortsleeves", "longsleeves", "sweatshrit", "hoodies"],
       message:
         "please select an category form- short sleeves, long sleeves, sweat-shrits, hoodies",
     },
   },
+
+  //this field was updated in order videos later
+  // stock: {
+  //   type: Number,
+  //   required: [true, "please add a number in stock"],
+  // },
 
   brand: {
     type: String,
@@ -68,7 +73,7 @@ const productSchema = new mongoose.Schema({
     {
       user: {
         type: mongoose.Schema.ObjectId,
-        ref: User,
+        ref: "User",
         required: true,
       },
 

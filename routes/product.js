@@ -1,12 +1,19 @@
 const express = require("express");
 const router = express.Router();
+const { isLoggedIn } = require("../middlewares/user");
+const { customRole } = require("../middlewares/admin");
 
+const {
+  addProduct,
+  getAllProduct,
+} = require("../controllers/productControllers");
 
-const {testProduct} = require("../controllers/productControllers")
+// * userroutes
+router.route("/product").get(getAllProduct);
 
+// ! Admin routes
+router
+  .route("/admin/product/add")
+  .post(isLoggedIn, customRole("admin"), addProduct);
 
-router.route("/testproduct").get(testProduct)
-
-
-
-module.exports = router
+module.exports = router;
