@@ -89,7 +89,7 @@ async function updateProductStock(productId, quantity) {
 
 
 
-exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
+exports.adminDeleteOrder = async (req, res, next) => {
   const order = await Order.findById(req.params.id);
 
   await order.remove();
@@ -97,4 +97,4 @@ exports.adminDeleteOrder = BigPromise(async (req, res, next) => {
   res.status(200).json({
     success: true,
   });
-});
+};
