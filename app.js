@@ -38,12 +38,16 @@ const home = require("./routes/home");
 const user = require("./routes/user");
 const admin = require("./routes/admin");
 const product = require("./routes/product");
+const payment = require("./routes/payment");
+const order = require("./routes/order");
 
 // Router Middleware
 app.use("/api/v1", home);
 app.use("/api/v1", user);
 app.use("/api/v1", admin);
 app.use("/api/v1", product);
+app.use("/api/v1", payment);
+app.use("/api/v1", order);
 
 app.get("/signuptest", (req, res) => {
   res.render("signuptest");
