@@ -49,10 +49,10 @@ const productSchema = new mongoose.Schema({
   },
 
   //this field was updated in order videos later
-  // stock: {
-  //   type: Number,
-  //   required: [true, "please add a number in stock"],
-  // },
+  stock: {
+    type: Number,
+    required: [true, "please add a number in stock"],
+  },
 
   brand: {
     type: String,
