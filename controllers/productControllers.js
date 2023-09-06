@@ -1,4 +1,4 @@
-const product = require("../models/product");
+
 const Product = require("../models/product");
 const WhereClause = require("../utils/whereClause");
 const cloudinary = require("cloudinary").v2;
@@ -126,7 +126,7 @@ exports.addReview = async (req, res, next) => {
   });
 };
 
-exports.deleteReview = BigPromise(async (req, res, next) => {
+exports.deleteReview = async (req, res, next) => {
   const { productId } = req.query;
 
   const product = await Product.findById(productId);
@@ -162,16 +162,16 @@ exports.deleteReview = BigPromise(async (req, res, next) => {
   res.status(200).json({
     success: true,
   });
-});
+};
 
-exports.getOnlyReviewsForOneProduct = BigPromise(async (req, res, next) => {
+exports.getOnlyReviewsForOneProduct = async (req, res, next) => {
   const product = await Product.findById(req.query.id);
 
   res.status(200).json({
     success: true,
     reviews: product.reviews,
   });
-});
+};
 
 //& Admin controllers
 
